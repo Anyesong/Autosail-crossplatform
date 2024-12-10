@@ -1,8 +1,8 @@
 {
-  "name": "continue",
-  "icon": "media/icon.png",
-  "author": "Continue Dev, Inc",
-  "version": "0.9.237",
+  "name": "autosail",
+  "icon": "media/autosail.png",
+  "author": "Shopee LLM TEAM",
+  "version": "0.0.14",
   "repository": {
     "type": "git",
     "url": "https://github.com/continuedev/continue"
@@ -18,10 +18,10 @@
   "homepage": "https://continue.dev",
   "qna": "https://github.com/continuedev/continue/issues/new/choose",
   "license": "Apache-2.0",
-  "displayName": "Continue - Codestral, Claude, and more",
+  "displayName": "AutoSail - Dev",
   "pricing": "Free",
   "description": "The leading open-source AI code assistant",
-  "publisher": "Continue",
+  "publisher": "CompassLLMCode",
   "engines": {
     "vscode": "^1.70.0",
     "node": ">=20.11.0"
@@ -123,7 +123,7 @@
         },
         "continue.enableDebugLogs": {
           "type": "boolean",
-          "default": false,
+          "default": true,
           "markdownDescription": "Enable Continue Debug Logs in the Output panel."
         },
         "continue.remoteConfigServerUrl": {
@@ -565,8 +565,8 @@
       "activitybar": [
         {
           "id": "continue",
-          "title": "Continue",
-          "icon": "media/sidebar-icon.png"
+          "title": "Autosail",
+          "icon": "media/inverted_image.png"
         }
       ]
     },

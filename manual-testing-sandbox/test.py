@@ -1,18 +1,16 @@
-class Calculator:
-    def __init__(self):
-        self.result = 0
 
-    def add(self, number):
-        self.result += number
-        return self
 
-    def subtract(self, number):
-        self.result -= number
-        return self
 
-    def reset(self):
-        self.result = 0
-        return self
+def quicksort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)
+print(quicksort([3,6,8,10,1,2,1]))
 
-    def get_result(self):
-        return self.result
+if __name__ == "__main__":
+    print("Example usage:")
+    print(quicksort([3,6,8,10,1,2,1]))

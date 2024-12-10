@@ -29,7 +29,7 @@ export function activate(context: vscode.ExtensionContext) {
     );
     vscode.window
       .showWarningMessage(
-        "Error activating the Continue extension.",
+        "Error activating the Autosail extension.",
         "View Logs",
         "Retry",
       )

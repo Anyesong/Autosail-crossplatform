@@ -56,11 +56,11 @@ const statusBarItemText = (
         return "$(loading~spin) Continue";
       }
     case StatusBarStatus.Disabled:
-      return "$(circle-slash) Continue";
+      return "$(circle-slash) Autosail";
     case StatusBarStatus.Enabled:
-      return "$(check) Continue";
+      return "$(check) Autosail";
     case StatusBarStatus.Paused:
-      return "$(debug-pause) Continue";
+      return "$(debug-pause) Autosail";
   }
 };
 

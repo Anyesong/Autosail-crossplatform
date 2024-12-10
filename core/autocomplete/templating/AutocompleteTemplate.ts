@@ -30,8 +30,23 @@ export interface AutocompleteTemplate {
 }
 
 // https://huggingface.co/stabilityai/stable-code-3b
+// const stableCodeFimTemplate: AutocompleteTemplate = {
+//   template: "<fim_prefix>{{{prefix}}}<fim_suffix>{{{suffix}}}<fim_middle>",
+//   completionOptions: {
+//     stop: [
+//       "<fim_prefix>",
+//       "<fim_suffix>",
+//       "<fim_middle>",
+//       "<file_sep>",
+//       "<|endoftext|>",
+//       "</fim_middle>",
+//       "</code>",
+//     ],
+//   },
+// };
+
 const stableCodeFimTemplate: AutocompleteTemplate = {
-  template: "<fim_prefix>{{{prefix}}}<fim_suffix>{{{suffix}}}<fim_middle>",
+  template: "[SUFFIX]{{{suffix}}} [PREFIX]{{{prefix}}}",
   completionOptions: {
     stop: [
       "<fim_prefix>",

@@ -6,17 +6,19 @@ import {
 } from "../";
 
 export const DEFAULT_CHAT_MODEL_CONFIG: ModelDescription = {
-  model: "claude-3-5-sonnet-latest",
-  provider: "anthropic",
-  apiKey: "",
-  title: "Claude 3.5 Sonnet",
+  title: "codecompasss",
+  provider: "openai",
+  model: "codecompass",
+  apiKey: "1",
+  apiBase: "http://sg9.aip.mlp.shopee.io/aip-svc-153/codecompass-service/v1"
 };
 
 export const DEFAULT_AUTOCOMPLETE_MODEL_CONFIG: ModelDescription = {
-  title: "Codestral",
-  provider: "mistral",
-  model: "codestral-latest",
-  apiKey: "",
+  title: "1",
+  provider: "openai",
+  model: "codecompass",
+  apiKey: "1",
+  apiBase: "http://sg9.aip.mlp.shopee.io/aip-svc-153/codecompass-service/v1"
 };
 
 export const FREE_TRIAL_MODELS: ModelDescription[] = [
