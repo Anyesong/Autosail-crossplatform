@@ -27,7 +27,7 @@ Autocomplete provides inline code suggestions as you type
 
 ## Edit
 
-Edit is a convenient way to modify code without leaving your current file
+Edit is a convenient way to modify code without leaving your current file~
 
 ![edit](docs/static/img/edit.gif)
 
