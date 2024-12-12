@@ -10,6 +10,7 @@ const STARCODER2_T_ARTIFACTS = ["t.", "\nt", "<file_sep>"];
 const PYTHON_ENCODING = "#- coding: utf-8";
 const CODE_BLOCK_END = "```";
 
+
 const multilineStops: string[] = [DOUBLE_NEWLINE, WINDOWS_DOUBLE_NEWLINE];
 const commonStops = [SRC_DIRECTORY, PYTHON_ENCODING, CODE_BLOCK_END];
 
@@ -21,7 +22,7 @@ export function getStopTokens(
   const stopTokens = [
     ...(completionOptions?.stop || []),
     // ...multilineStops,
-    ...commonStops,
+    //...commonStops,
     ...(model.toLowerCase().includes("starcoder2")
       ? STARCODER2_T_ARTIFACTS
       : []),

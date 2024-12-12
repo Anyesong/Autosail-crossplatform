@@ -294,13 +294,15 @@ class OpenAI extends BaseLLM {
     signal: AbortSignal,
     options: CompletionOptions,
   ): AsyncGenerator<string> {
-    const endpoint = new URL("fim/completions", this.apiBase);
+    const endpoint = new URL("chat/completions", this.apiBase);
     const resp = await this.fetch(endpoint, {
       method: "POST",
       body: JSON.stringify({
         model: options.model,
-        prompt: prefix,
-        suffix,
+        messages: [
+          {role: "prefix", content: prefix},
+          {role: "suffix", content: suffix},
+        ],
         max_tokens: options.maxTokens,
         temperature: options.temperature,
         top_p: options.topP,
@@ -317,8 +319,10 @@ class OpenAI extends BaseLLM {
       },
       signal,
     });
-    for await (const chunk of streamSse(resp)) {
-      yield chunk.choices[0].delta.content;
+    for await (const value of streamSse(resp)) {
+      if (value.choices?.[0]?.delta?.content) {
+        yield stripImages(value.choices[0].delta?.content);
+      }
     }
   }
 
@@ -330,6 +334,10 @@ class OpenAI extends BaseLLM {
 
     const data = await response.json();
     return data.data.map((m: any) => m.id);
+  }
+
+  supportsFim(): boolean {
+    return true;
   }
 }
 

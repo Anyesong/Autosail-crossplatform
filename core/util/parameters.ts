@@ -16,7 +16,7 @@ export const DEFAULT_AUTOCOMPLETE_OPTS: TabAutocompleteOptions = {
   disableInFiles: undefined,
   useImports: true,
   transform: true,
-  showWhateverWeHaveAtXMs: 300,
+  showWhateverWeHaveAtXMs: 1000,
 };
 
 export const COUNT_COMPLETION_REJECTED_AFTER = 10_000;
