@@ -47,13 +47,13 @@ const statusBarItemText = (
   error?: boolean,
 ) => {
   if (error) {
-    return "$(alert) Continue (FATAL ERROR)";
+    return "$(alert) Autosail (FATAL ERROR)";
   }
 
   switch (status) {
     case undefined:
       if (loading) {
-        return "$(loading~spin) Continue";
+        return "$(loading~spin) Autosail";
       }
     case StatusBarStatus.Disabled:
       return "$(circle-slash) Autosail";

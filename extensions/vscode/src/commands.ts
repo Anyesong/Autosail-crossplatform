@@ -901,10 +901,10 @@ const getCommandsMap: (
           kind: vscode.QuickPickItemKind.Separator,
           label: "Switch model",
         },
-        ...autocompleteModels.map((model) => ({
-          label: getAutocompleteStatusBarTitle(selected, model),
-          description: getAutocompleteStatusBarDescription(selected, model),
-        })),
+        // ...autocompleteModels.map((model) => ({
+        //   label: getAutocompleteStatusBarTitle(selected, model),
+        //   description: getAutocompleteStatusBarDescription(selected, model),
+        // })),
       ];
       quickPick.onDidAccept(() => {
         const selectedOption = quickPick.selectedItems[0].label;

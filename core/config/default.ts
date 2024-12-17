@@ -10,15 +10,15 @@ export const DEFAULT_CHAT_MODEL_CONFIG: ModelDescription = {
   provider: "openai",
   model: "codecompass",
   apiKey: "1",
-  apiBase: "http://sg9.aip.mlp.shopee.io/aip-svc-153/codecompass-service/v1"
+  apiBase: "http://sg9.aip.mlp.shopee.io/aip-svc-153/codecompass-service-test/v1"
 };
 
 export const DEFAULT_AUTOCOMPLETE_MODEL_CONFIG: ModelDescription = {
-  title: "1",
+  title: "codecompass",
   provider: "openai",
   model: "codecompass",
   apiKey: "1",
-  apiBase: "http://sg9.aip.mlp.shopee.io/aip-svc-153/codecompass-service/v1"
+  apiBase: "http://sg9.aip.mlp.shopee.io/aip-svc-153/codecompass-service-test/v1"
 };
 
 export const FREE_TRIAL_MODELS: ModelDescription[] = [
@@ -101,9 +101,14 @@ export const defaultConfig: SerializedContinueConfig = {
     {
       name: "test",
       prompt:
-        "{{{ input }}}\n\nWrite a comprehensive set of unit tests for the selected code. It should setup, run tests that check for correctness including important edge cases, and teardown. Ensure that the tests are complete and sophisticated. Give the tests just as chat output, don't edit any file.",
+        "```{{{ input }}}```\n\nWrite a comprehensive set of unit tests for the selected code. It should setup, run tests that check for correctness including important edge cases, and teardown. Ensure that the tests are complete and sophisticated. Give the tests just as chat output, don't edit any file.",
       description: "Write unit tests for highlighted code",
     },
+    {
+      "name": "trans",
+      "prompt": "We need your help to automate the conversion of Python functions into equivalent C++ implementations. \n Context: Context: \n Input and output are protobuf objects. \n Users write flexible transformation logic in Python functions. \n The goal is to generate C++ code matching the Python function’s behavior. \n Objective: \n Take a Python function (handling protobuf objects) and output equivalent C++ code. \n Ensure the generated code is syntactically correct, readable, and maintainable. \n Allow users to make minor adjustments for final fine-tuning. \n python code: \n {{{ input }}}\n c++ code: ",
+      "description": "Converte python to c++"
+    }
   ],
   contextProviders: defaultContextProvidersVsCode,
   slashCommands: defaultSlashCommandsVscode,

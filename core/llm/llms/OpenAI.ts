@@ -267,6 +267,36 @@ class OpenAI extends BaseLLM {
       ...m,
       content: m.content === "" ? " " : m.content,
     })) as any;
+
+
+    // 针对/test类型请求，请求agent服务----start
+    const latestMessageContent = messages[messages.length - 1]?.content || "";
+    const specificString = "Write a comprehensive set of unit tests for"; 
+    if (typeof latestMessageContent === "string" && latestMessageContent.includes(specificString)) {
+      
+
+      // 提取 ``` ``` 包裹的代码内容
+      const codeContentMatch = latestMessageContent.match(/```([\s\S]*?)```/);
+      const codeContent = codeContentMatch ? codeContentMatch[1].trim() : "";
+
+      // 修改 messages 最后一个元素的 content 值
+      messages[messages.length - 1].content = codeContent;
+
+      const response = await this.fetch("http://127.0.0.1:5000/unit-test", {
+        method: "POST",
+        headers: this._getHeaders(),
+        body: JSON.stringify(body),
+        signal,
+      });
+
+      const data = await response.json();
+      yield data;
+      return;
+
+    } 
+ 
+      
+    // 针对/test类型请求，请求agent服务----end
     const response = await this.fetch(this._getEndpoint("chat/completions"), {
       method: "POST",
       headers: this._getHeaders(),
