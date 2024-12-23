@@ -24,11 +24,11 @@ class Calculator {
     }
     this.result /= number;
     return this;
-  }
+  } 
 
   getResult() {
     return this.result;
-  }
+  } 
 
   reset() {
     this.result = 0;

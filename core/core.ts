@@ -18,6 +18,7 @@ import { getAuthUrlForTokenPage } from "./control-plane/auth/index";
 import { ControlPlaneClient } from "./control-plane/client";
 import { streamDiffLines } from "./edit/streamDiffLines";
 import { CodebaseIndexer, PauseToken } from "./indexing/CodebaseIndexer";
+import { FunctionIndexer, FunctionPauseToken} from "./indexing/FunctionIndexer";
 import DocsService from "./indexing/docs/DocsService";
 import { getAllSuggestedDocs } from "./indexing/docs/suggestions";
 import { defaultIgnoreFile } from "./indexing/ignore.js";
@@ -42,6 +43,7 @@ export class Core {
   // implements IMessenger<ToCoreProtocol, FromCoreProtocol>
   configHandler: ConfigHandler;
   codebaseIndexerPromise: Promise<CodebaseIndexer>;
+  functionIndexerPromise: Promise<FunctionIndexer>;;
   completionProvider: CompletionProvider;
   continueServerClientPromise: Promise<ContinueServerClient>;
   codebaseIndexingState: IndexingProgressUpdate;
@@ -50,6 +52,9 @@ export class Core {
   private globalContext = new GlobalContext();
 
   private readonly indexingPauseToken = new PauseToken(
+    this.globalContext.get("indexingPaused") === true,
+  );
+  private readonly functionPauseToken = new FunctionPauseToken(
     this.globalContext.get("indexingPaused") === true,
   );
 
@@ -130,6 +135,11 @@ export class Core {
       async (resolve) => (codebaseIndexerResolve = resolve),
     );
 
+    let functionIndexerResolve: (_: any) => void | undefined;
+    this.functionIndexerPromise = new Promise(
+      async (resolve) => (functionIndexerResolve = resolve),
+    );
+
     let continueServerClientResolve: (_: any) => void | undefined;
     this.continueServerClientPromise = new Promise(
       (resolve) => (continueServerClientResolve = resolve),
@@ -150,6 +160,17 @@ export class Core {
           continueServerClient,
         ),
       );
+
+      functionIndexerResolve(
+        new FunctionIndexer(
+          this.configHandler,
+          this.ide,
+          this.functionPauseToken,
+          continueServerClient,
+        ),
+      );
+
+      
 
       // Index on initialization
       void this.ide.getWorkspaceDirs().then(async (dirs) => {
@@ -725,6 +746,18 @@ export class Core {
       }
     });
 
+    // Function indexing
+    on("index/clearFunction", async ({ data }) => {
+      const codebaseIndexer = await this.codebaseIndexerPromise;
+      await codebaseIndexer.clearIndexes();
+      
+    });
+
+    on("index/buildFunction", async ({ data }) => {
+      const dirs = data?.dirs ?? (await this.ide.getWorkspaceDirs());
+      await this.buildFunctionIndex(dirs);
+    });
+
     // Docs, etc. indexing
     on("indexing/reindex", async (msg) => {
       if (msg.data.type === "docs") {
@@ -854,7 +887,36 @@ export class Core {
     this.messenger.send("refreshSubmenuItems", undefined);
   }
 
-  // private
+
+
+  private async buildFunctionIndex(paths: string[]) {
+
+    if (this.indexingCancellationController) {
+      this.indexingCancellationController.abort();
+    }
+    this.indexingCancellationController = new AbortController();
+    for await (const update of (await this.functionIndexerPromise).refreshFunctionDirs(
+      paths,
+      this.indexingCancellationController.signal,
+    )) {
+      let updateToSend = { ...update };
+      if (update.status === "failed") {
+        updateToSend.status = "done";
+        updateToSend.desc = "Indexing complete";
+        updateToSend.progress = 1.0;
+      }
+
+      void this.messenger.request("indexProgress", updateToSend);
+      this.codebaseIndexingState = updateToSend;
+
+      if (update.status === "failed") {
+        void this.sendIndexingErrorTelemetry(update);
+      }
+    }
+
+    this.messenger.send("refreshSubmenuItems", undefined);
+    this.indexingCancellationController = undefined;
+  }
 }
 
 let hasRequestedDocs = false;

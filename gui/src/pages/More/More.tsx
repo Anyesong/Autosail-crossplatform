@@ -15,6 +15,7 @@ import { setOnboardingCard } from "../../redux/slices/uiStateSlice";
 import useHistory from "../../hooks/useHistory";
 import MoreHelpRow from "./MoreHelpRow";
 import IndexingProgress from "./IndexingProgress";
+import FunctionIndexingProgress from "./FunctionIndexingProgress";
 import DocsIndexingStatuses from "../../components/indexing/DocsIndexingStatuses";
 
 function MorePage() {
@@ -42,6 +43,15 @@ function MorePage() {
       </div>
 
       <div className="gap-2 divide-x-0 divide-y-2 divide-solid divide-zinc-700 px-4">
+      <div className="py-5">
+          <div>
+            <h3 className="mx-auto mb-1 mt-0 text-xl">Unit-test function index</h3>
+            <span className="w-3/4 text-xs text-stone-500">
+              Local function index of your codebase
+            </span>
+          </div>
+          <FunctionIndexingProgress />
+        </div>
         <div className="py-5">
           <div>
             <h3 className="mx-auto mb-1 mt-0 text-xl">@codebase index</h3>

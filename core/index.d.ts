@@ -29,10 +29,23 @@ export interface ChunkWithoutID {
   startLine: number;
   endLine: number;
   signature?: string;
-  otherMetadata?: { [key: string]: any };
+  otherMetadata?: { [key: string]: any };  
 }
 
 export interface Chunk extends ChunkWithoutID {
+  digest: string;
+  filepath: string;
+  index: number; // Index of the chunk in the document at filepath
+}
+
+export interface FunctionChunk extends ChunkWithoutID {
+  content: string;
+  startLine: number;
+  endLine: number;
+  signature?: string;
+  otherMetadata?: { [key: string]: any };  
+  function_name: string;
+  function_context: string;
   digest: string;
   filepath: string;
   index: number; // Index of the chunk in the document at filepath

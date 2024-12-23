@@ -265,6 +265,14 @@ export function getLanceDbPath(): string {
   return path.join(getIndexFolderPath(), "lancedb");
 }
 
+export function getFunctionIndexSqlitePath(): string {
+  return path.join(getIndexFolderPath(), "index_function.sqlite");
+}
+
+export function getFunctionLanceDbPath(): string {
+  return path.join(getIndexFolderPath(), "lancedb_function");
+}
+
 export function getTabAutocompleteCacheSqlitePath(): string {
   return path.join(getIndexFolderPath(), "autocompleteCache.sqlite");
 }

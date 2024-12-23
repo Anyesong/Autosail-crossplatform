@@ -174,4 +174,18 @@ export type ToCoreFromIdeOrWebviewProtocol = {
   "profiles/switch": [{ id: string }, undefined];
 
   "auth/getAuthUrl": [undefined, { url: string }];
+
+  // Function indexing
+  "index/forceReIndexFunction": [
+    undefined | { dirs?: string[]; shouldClearIndexes?: boolean },
+    void,
+  ];
+  "index/clearFunction": [
+    undefined | { dirs?: string[]; shouldClearIndexes?: boolean },
+    void,
+  ];
+  "index/buildFunction": [
+    undefined | { dirs?: string[]; shouldClearIndexes?: boolean },
+    void,
+  ];
 };
