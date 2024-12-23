@@ -1,11 +1,11 @@
-import { IndexingProgressUpdate } from "core";
+import { FunctionIndexingProgressUpdate } from "core";
 import { AnimatedEllipsis } from "../../../components";
 
 export interface IndexingProgressTitleTextProps {
-  update: IndexingProgressUpdate;
+  update: FunctionIndexingProgressUpdate;
 }
 
-const STATUS_TO_TEXT: Record<IndexingProgressUpdate["status"], string> = {
+const STATUS_TO_TEXT: Record<FunctionIndexingProgressUpdate["status"], string> = {
   done: "Indexing complete",
   loading: "Initializing",
   indexing: "Indexing in-progress",

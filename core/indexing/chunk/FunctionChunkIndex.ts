@@ -3,7 +3,8 @@ import * as path from "path";
 import { RunResult } from "sqlite3";
 
 import { IContinueServerClient } from "../../continueServer/interface.js";
-import { Chunk, IndexTag, IndexingProgressUpdate } from "../../index.js";
+import { FunctionIContinueServerClient } from "../../continueServer/functionInterface.js";
+import { Chunk, FunctionChunk, IndexTag, IndexingProgressUpdate } from "../../index.js";
 import { getBasename } from "../../util/index.js";
 import { DatabaseConnection, SqliteDb, tagToString } from "../refreshIndex.js";
 import {
@@ -24,7 +25,7 @@ export class FunctionChunkIndex implements CodebaseIndex {
   constructor(
     private readonly readFile: (filepath: string) => Promise<string>,
     private readonly pathSep: string,
-    private readonly continueServerClient: IContinueServerClient,
+    private readonly continueServerClient: FunctionIContinueServerClient,
     private readonly maxChunkSize: number,
   ) {}
   
@@ -156,10 +157,12 @@ export class FunctionChunkIndex implements CodebaseIndex {
       idx INTEGER NOT NULL,
       startLine INTEGER NOT NULL,
       endLine INTEGER NOT NULL,
-      content TEXT NOT NULL
+      content TEXT NOT NULL,
+      function_name TEXT NOT NULL,
+      function_context TEXT NOT NULL
     )`);
 
-    await db.exec(`CREATE TABLE IF NOT EXISTS chunk_tags (
+    await db.exec(`CREATE TABLE IF NOT EXISTS function_chunk_tags (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         tag TEXT NOT NULL,
         chunkId INTEGER NOT NULL,
@@ -167,12 +170,12 @@ export class FunctionChunkIndex implements CodebaseIndex {
     )`);
   }
 
-  private async packToChunks(pack: PathAndCacheKey): Promise<Chunk[]> {
+  private async packToChunks(pack: PathAndCacheKey): Promise<FunctionChunk[]> {
     const contents = await this.readFile(pack.path);
     if (!shouldChunk(this.pathSep, pack.path, contents)) {
       return [];
     }
-    const chunks: Chunk[] = [];
+    const chunks: FunctionChunk[] = [];
     const chunkParams = {
       filepath: pack.path,
       contents,
@@ -185,7 +188,7 @@ export class FunctionChunkIndex implements CodebaseIndex {
     return chunks;
   }
 
-  private async computeChunks(paths: PathAndCacheKey[]): Promise<Chunk[]> {
+  private async computeChunks(paths: PathAndCacheKey[]): Promise<FunctionChunk[]> {
     const chunkLists = await Promise.all(
       paths.map((p) => this.packToChunks(p)),
     );
@@ -195,7 +198,7 @@ export class FunctionChunkIndex implements CodebaseIndex {
   private async insertChunks(
     db: DatabaseConnection,
     tagString: string,
-    chunks: Chunk[],
+    chunks: FunctionChunk[],
   ) {
     await new Promise<void>((resolve, reject) => {
       db.db.serialize(() => {
@@ -205,11 +208,11 @@ export class FunctionChunkIndex implements CodebaseIndex {
           }
         });
         const chunksSQL =
-          "INSERT INTO chunks (cacheKey, path, idx, startLine, endLine, content) VALUES (?, ?, ?, ?, ?, ?)";
+          "INSERT INTO functionChunks (cacheKey, path, idx, startLine, endLine, content, function_name, function_context) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         chunks.map((c) => {
           db.db.run(
             chunksSQL,
-            [c.digest, c.filepath, c.index, c.startLine, c.endLine, c.content],
+            [c.digest, c.filepath, c.index, c.startLine, c.endLine, c.content, c.function_name, c.function_context],
             (result: RunResult, err: Error) => {
               if (err) {
                 reject(
@@ -221,7 +224,7 @@ export class FunctionChunkIndex implements CodebaseIndex {
             },
           );
           const chunkTagsSQL =
-            "INSERT INTO chunk_tags (chunkId, tag) VALUES (last_insert_rowid(), ?)";
+            "INSERT INTO function_chunk_tags (chunkId, tag) VALUES (last_insert_rowid(), ?)";
           db.db.run(
             chunkTagsSQL,
             [tagString],

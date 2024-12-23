@@ -176,6 +176,8 @@ export type ToCoreFromIdeOrWebviewProtocol = {
   "auth/getAuthUrl": [undefined, { url: string }];
 
   // Function indexing
+  "index/functionSetPaused": [boolean, void];
+  "index/functionIndexingProgressBarInitialized": [undefined, void];
   "index/forceReIndexFunction": [
     undefined | { dirs?: string[]; shouldClearIndexes?: boolean },
     void,

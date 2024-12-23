@@ -59,6 +59,15 @@ export interface IndexingProgressUpdate {
   debugInfo?: string;
 }
 
+
+export interface FunctionIndexingProgressUpdate {
+  progress: number;
+  desc: string;
+  shouldClearIndexes?: boolean;
+  status: "loading" | "indexing" | "done" | "failed" | "paused" | "disabled";
+  debugInfo?: string;
+}
+
 // This is more or less a V2 of IndexingProgressUpdate
 export interface IndexingStatus {
   id: string;

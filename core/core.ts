@@ -14,6 +14,7 @@ import {
 import { addModel, addOpenAIKey, deleteModel } from "./config/util";
 import { recentlyEditedFilesCache } from "./context/retrieval/recentlyEditedFilesCache";
 import { ContinueServerClient } from "./continueServer/stubs/client";
+import { FunctionContinueServerClient } from "./continueServer/stubs/functionClients";
 import { getAuthUrlForTokenPage } from "./control-plane/auth/index";
 import { ControlPlaneClient } from "./control-plane/client";
 import { streamDiffLines } from "./edit/streamDiffLines";
@@ -46,6 +47,7 @@ export class Core {
   functionIndexerPromise: Promise<FunctionIndexer>;;
   completionProvider: CompletionProvider;
   continueServerClientPromise: Promise<ContinueServerClient>;
+  functionContinueServerClientPromise: Promise<FunctionContinueServerClient>;
   codebaseIndexingState: IndexingProgressUpdate;
   controlPlaneClient: ControlPlaneClient;
   private docsService: DocsService;
@@ -145,12 +147,25 @@ export class Core {
       (resolve) => (continueServerClientResolve = resolve),
     );
 
+    let functionContinueServerClientResolve: (_: any) => void | undefined;
+    this.functionContinueServerClientPromise = new Promise(
+      (resolve) => (functionContinueServerClientResolve = resolve),
+    );
+
     void ideSettingsPromise.then((ideSettings) => {
+      // 
       const continueServerClient = new ContinueServerClient(
         ideSettings.remoteConfigServerUrl,
         ideSettings.userToken,
       );
       continueServerClientResolve(continueServerClient);
+      
+      //
+      const functionContinueServerClient = new FunctionContinueServerClient(
+        ideSettings.remoteConfigServerUrl,
+        ideSettings.userToken,
+      );
+      functionContinueServerClientResolve(functionContinueServerClient);
 
       codebaseIndexerResolve(
         new CodebaseIndexer(
@@ -166,7 +181,7 @@ export class Core {
           this.configHandler,
           this.ide,
           this.functionPauseToken,
-          continueServerClient,
+          functionContinueServerClient,
         ),
       );
 
@@ -748,15 +763,29 @@ export class Core {
 
     // Function indexing
     on("index/clearFunction", async ({ data }) => {
-      const codebaseIndexer = await this.codebaseIndexerPromise;
-      await codebaseIndexer.clearIndexes();
-      
+      const functionIndexer = await this.functionIndexerPromise;
+      await functionIndexer.clearIndexes();
     });
 
     on("index/buildFunction", async ({ data }) => {
       const dirs = data?.dirs ?? (await this.ide.getWorkspaceDirs());
       await this.buildFunctionIndex(dirs);
     });
+    on("index/functionSetPaused", (msg) => {
+      this.globalContext.update("indexingPaused", msg.data);
+      this.indexingPauseToken.paused = msg.data;
+    });
+    on("index/functionIndexingProgressBarInitialized", async (msg) => {
+      // Triggered when progress bar is initialized.
+      // If a non-default state has been stored, update the indexing display to that state
+      if (this.codebaseIndexingState.status !== "loading") {
+        void this.messenger.request(
+          "functionIndexProgress",
+          this.codebaseIndexingState,
+        );
+      }
+    });
+
 
     // Docs, etc. indexing
     on("indexing/reindex", async (msg) => {
@@ -906,7 +935,7 @@ export class Core {
         updateToSend.progress = 1.0;
       }
 
-      void this.messenger.request("indexProgress", updateToSend);
+      void this.messenger.request("functionIndexProgress", updateToSend);
       this.codebaseIndexingState = updateToSend;
 
       if (update.status === "failed") {

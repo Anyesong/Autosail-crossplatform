@@ -62,6 +62,8 @@ export const WEBVIEW_TO_CORE_PASS_THROUGH: (keyof ToCoreFromWebviewProtocol)[] =
     "index/forceReIndexFunction",
     "index/clearFunction",
     "index/buildFunction",
+    "index/functionSetPaused",
+    "index/functionIndexingProgressBarInitialized"
   ];
 
 // Message types to pass through from core to webview
@@ -70,6 +72,7 @@ export const CORE_TO_WEBVIEW_PASS_THROUGH: (keyof ToWebviewFromCoreProtocol)[] =
     "configUpdate",
     "getDefaultModelTitle",
     "indexProgress", // Codebase
+    "functionIndexProgress",
     "indexing/statusUpdate", // Docs, etc.
     "addContextItem",
     "refreshSubmenuItems",

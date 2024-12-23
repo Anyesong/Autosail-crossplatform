@@ -2,6 +2,7 @@ import * as fs from "fs/promises";
 import plimit from "p-limit";
 import { ConfigHandler } from "../config/ConfigHandler.js";
 import { IContinueServerClient } from "../continueServer/interface.js";
+import { FunctionIContinueServerClient } from "../continueServer/functionInterface.js";
 import { IDE, IndexingProgressUpdate, IndexTag } from "../index.js";
 import { extractMinimalStackTraceInfo } from "../util/extractMinimalStackTraceInfo.js";
 import { getFunctionIndexSqlitePath, getFunctionLanceDbPath } from "../util/paths.js";
@@ -12,6 +13,7 @@ import { CodeSnippetsCodebaseIndex } from "./CodeSnippetsIndex.js";
 import { FullTextSearchCodebaseIndex } from "./FullTextSearchCodebaseIndex.js";
 import { LanceDbIndex } from "./LanceDbIndex.js";
 import { getComputeDeleteAddRemove } from "./functionRefreshIndex.js";
+import { DatabaseConnection, SqliteDb, tagToString } from "./refreshIndex.js";
 import {
   CodebaseIndex,
   IndexResultType,
@@ -68,24 +70,66 @@ export class FunctionIndexer {
     private readonly configHandler: ConfigHandler,
     protected readonly ide: IDE,
     private readonly pauseToken: FunctionPauseToken,
-    private readonly continueServerClient: IContinueServerClient,
+    private readonly continueServerClient: FunctionIContinueServerClient,
   ) {}
 
   async clearIndexes() {
-    const sqliteFilepath = getFunctionIndexSqlitePath();
-    const lanceDbFolder = getFunctionLanceDbPath();
+    const db = await SqliteDb.get();
+    await new Promise<void>((resolve, reject) => {
+      db.db.serialize(() => {
+        db.db.exec("BEGIN", (err: Error | null) => {
+          if (err) {
+            reject(new Error("error creating transaction", { cause: err }));
+          }
+        });
+        // 删除表或表内容的命令
+        const deleteSQL1 = "DROP TABLE functionChunks"; // 或者"DROP TABLE table_name"
+        db.db.exec(deleteSQL1, (err: Error | null) => {
+          if (err) {
+            reject(
+              new Error("error deleting table functionchunks", {
+                cause: err,
+              }),
+            );
+          }
+        });
+        const deleteSQL2 = "DROP TABLE function_chunk_tags"; // 或者"DROP TABLE table_name"
+        db.db.exec(deleteSQL2, (err: Error | null) => {
+          if (err) {
+            reject(
+              new Error("error deleting table function_chunk_tags", {
+                cause: err,
+              }),
+            );
+          }
+        });
+        db.db.exec("COMMIT", (err: Error | null) => {
+          if (err) {
+            reject(
+              new Error("error while committing insert chunks transaction", {
+                cause: err,
+              }),
+            );
+          } else {
+            resolve();
+          }
+        });
+      });
+    });
+    // const sqliteFilepath = getFunctionIndexSqlitePath();
+    // const lanceDbFolder = getFunctionLanceDbPath();
 
-    try {
-      await fs.unlink(sqliteFilepath);
-    } catch (error) {
-      console.error(`Error deleting ${sqliteFilepath} folder: ${error}`);
-    }
+    // try {
+    //   await fs.unlink(sqliteFilepath);
+    // } catch (error) {
+    //   console.error(`Error deleting ${sqliteFilepath} folder: ${error}`);
+    // }
 
-    try {
-      await fs.rm(lanceDbFolder, { recursive: true, force: true });
-    } catch (error) {
-      console.error(`Error deleting ${lanceDbFolder}: ${error}`);
-    }
+    // try {
+    //   await fs.rm(lanceDbFolder, { recursive: true, force: true });
+    // } catch (error) {
+    //   console.error(`Error deleting ${lanceDbFolder}: ${error}`);
+    // }
   }
 
   protected async getIndexesToBuild(): Promise<CodebaseIndex[]> {

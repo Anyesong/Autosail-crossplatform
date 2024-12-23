@@ -48,7 +48,7 @@ export async function* chunkDocument({
   contents,
   maxChunkSize,
   digest,
-}: ChunkDocumentParam): AsyncGenerator<Chunk> {
+}: ChunkDocumentParam): AsyncGenerator<FunctionChunk> {
   let index = 0;
   const chunkPromises: Promise<FunctionChunk | undefined>[] = [];
   for await (const chunkWithoutId of chunkDocumentWithoutId(

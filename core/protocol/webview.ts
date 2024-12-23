@@ -12,6 +12,7 @@ export type ToWebviewFromIdeOrCoreProtocol = {
   configError: [ConfigValidationError[] | undefined, void];
   getDefaultModelTitle: [undefined, string];
   indexProgress: [IndexingProgressUpdate, void]; // Codebase
+  functionIndexProgress: [IndexingProgressUpdate, void]; // function search
   "indexing/statusUpdate": [IndexingStatus, void]; // Docs, etc.
   refreshSubmenuItems: [undefined, void];
   isContinueInputFocused: [undefined, boolean];
