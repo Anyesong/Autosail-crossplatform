@@ -1,7 +1,7 @@
 import { CustomCommand, SlashCommand, SlashCommandDescription } from "../";
 import { stripImages } from "../llm/images";
 import { renderTemplatedString } from "../promptFiles/v1/renderTemplatedString";
-
+import { functionSearch } from "./customFunction/functionSearch";
 import SlashCommands from "./slash";
 
 export function slashFromCustomCommand(
@@ -10,13 +10,21 @@ export function slashFromCustomCommand(
   return {
     name: customCommand.name,
     description: customCommand.description,
-    run: async function* ({ input, llm, history, ide }) {
+    run: async function* ({ input, llm, history, ide, selectedCode }) {
       // Remove slash command prefix from input
       let userInput = input;
       if (userInput.startsWith(`/${customCommand.name}`)) {
         userInput = userInput
           .slice(customCommand.name.length + 1, userInput.length)
           .trimStart();
+      }
+
+      // search function name and add the context in the given code
+      try {
+        userInput = await functionSearch(userInput, selectedCode);
+      } catch (error) {
+        console.error("Error in functionSearch:", error);
+        return;
       }
 
       // Render prompt template

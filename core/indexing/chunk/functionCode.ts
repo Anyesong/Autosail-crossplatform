@@ -238,28 +238,77 @@ async function* getSmartFunctionChunks(
       
       if (parentNode) {
         // Create a FunctionChunk with function name and context
-        const function_name = extractText(node);
-        const function_context = extractText(parentNode);
-        if (function_context.length > 50 && function_name.length > 2) {
-            const chunk: FunctionChunk = {
-                content: extractText(node),
-                startLine: node.startPosition.row,
-                endLine: node.endPosition.row,
-                function_name: extractText(node),
-                function_context: extractText(parentNode),
-                digest: "",
-                filepath: "",
-                index: 0,
-            };
-            // Yield the result as a chunk
-            yield chunk;
-        }; 
+        try {
+          const father_type = parentNode.type;
+          const father_text = extractText(parentNode);
+          const children_text = extractText(node);
+          if (["function_definition", "class_declaration"].includes(father_type)) {
+              const chunk: FunctionChunk = {
+                  content: extractText(node),
+                  startLine: node.startPosition.row,
+                  endLine: node.endPosition.row,
+                  function_name: children_text,
+                  function_context: father_text,
+                  digest: "",
+                  filepath: "",
+                  index: 0,
+              };
+              // Yield the result as a chunk
+              yield chunk;
+        }
+      } catch(error) {
+        console.error("Error in chunk analyse process:", error);
+      }; 
       }
     }
-  
     // Recursively process child nodes
     for (const child of node.children) {
       yield* getSmartFunctionChunks(child, code, maxChunkSize, false);
+    }
+  }
+
+  async function* getSmartFunctionChunksForFunctionSearch(
+    node: SyntaxNode,
+    code: string,
+    maxChunkSize: number,
+    root = true
+  ): AsyncGenerator<FunctionChunk> {
+    // Helper function to extract text from a node
+    const extractText = (node: SyntaxNode) => code.slice(node.startIndex, node.endIndex);
+  
+    // Check if the current node is an identifier
+    if (node.grammarType === "identifier") {
+      // Find the nearest parent node
+      const parentNode = node.parent;
+      
+      if (parentNode) {
+        // Create a FunctionChunk with function name and context
+        try {
+          const father_type = parentNode.grammarType;
+          const father_text = extractText(parentNode);
+          const children_text = extractText(node);
+          if (["call"].includes(father_type)) {
+              const chunk: FunctionChunk = {
+                  content: extractText(node),
+                  startLine: node.startPosition.row,
+                  endLine: node.endPosition.row,
+                  function_name: children_text,
+                  function_context: father_text,
+                  digest: "",
+                  filepath: "",
+                  index: 0,
+              };
+              // Yield the result as a chunk
+              yield chunk;
+        }
+      } catch(error) {
+        console.error("Error in chunk analyse process:", error);
+      }; 
+      }
+    }
+    // Recursively process child nodes
+    for (const child of node.children) {
+      yield* getSmartFunctionChunksForFunctionSearch(child, code, maxChunkSize, false);
     }
   }
 
@@ -280,4 +329,23 @@ export async function* codeChunker(
   const tree = parser.parse(contents);
 
   yield* getSmartFunctionChunks(tree.rootNode, contents, maxChunkSize);
+}
+
+export async function* codeChunkerForFunctionSearch(
+  filepath: string,
+  contents: string,
+  maxChunkSize: number,
+): AsyncGenerator<FunctionChunk> {
+  if (contents.trim().length === 0) {
+    return;
+  }
+
+  const parser = await getParserForFile(filepath);
+  if (parser === undefined) {
+    throw new Error(`Failed to load parser for file ${filepath}: `);
+  }
+
+  const tree = parser.parse(contents);
+
+  yield* getSmartFunctionChunksForFunctionSearch(tree.rootNode, contents, maxChunkSize);
 }

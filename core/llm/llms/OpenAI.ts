@@ -280,9 +280,9 @@ class OpenAI extends BaseLLM {
       const codeContent = codeContentMatch ? codeContentMatch[1].trim() : "";
 
       // 修改 messages 最后一个元素的 content 值
-      messages[messages.length - 1].content = codeContent;
-
-      const response = await this.fetch("http://127.0.0.1:5000/unit-test", {
+      // messages[messages.length - 1].content = codeContent;
+      
+      const response = await this.fetch("http://127.0.0.1:8050/unit_test", {
         method: "POST",
         headers: this._getHeaders(),
         body: JSON.stringify(body),
