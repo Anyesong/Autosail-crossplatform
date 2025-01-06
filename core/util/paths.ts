@@ -91,7 +91,7 @@ export function getSessionsListPath(): string {
 
 export function getConfigJsonPath(ideType: IdeType = "vscode"): string {
   const p = path.join(getContinueGlobalPath(), "config.json");
-  if (!fs.existsSync(p)) {
+  if (true) {
     if (ideType === "jetbrains") {
       fs.writeFileSync(p, JSON.stringify(defaultConfigJetBrains, null, 2));
     } else {

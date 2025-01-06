@@ -10,7 +10,7 @@ export const DEFAULT_CHAT_MODEL_CONFIG: ModelDescription = {
   provider: "openai",
   model: "codecompass",
   apiKey: "1",
-  apiBase: "http://sg9.aip.mlp.shopee.io/aip-svc-153/codecompass-service-test/v1"
+  apiBase: "http://sg9.aip.mlp.shopee.io/aip-svc-153/codecompass-service/v1"
 };
 
 export const DEFAULT_AUTOCOMPLETE_MODEL_CONFIG: ModelDescription = {
@@ -18,7 +18,7 @@ export const DEFAULT_AUTOCOMPLETE_MODEL_CONFIG: ModelDescription = {
   provider: "openai",
   model: "codecompass",
   apiKey: "1",
-  apiBase: "http://sg9.aip.mlp.shopee.io/aip-svc-153/codecompass-service-test/v1"
+  apiBase: "http://sg9.aip.mlp.shopee.io/aip-svc-153/codecompass-service/v1"
 };
 
 export const FREE_TRIAL_MODELS: ModelDescription[] = [

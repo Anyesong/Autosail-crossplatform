@@ -282,7 +282,7 @@ class OpenAI extends BaseLLM {
       // 修改 messages 最后一个元素的 content 值
       // messages[messages.length - 1].content = codeContent;
       
-      const response = await this.fetch("http://127.0.0.1:8050/unit_test", {
+      const response = await this.fetch("http://sg10.aip.mlp.shopee.io/services/284996/unit_test", {
         method: "POST",
         headers: this._getHeaders(),
         body: JSON.stringify(body),
@@ -367,7 +367,7 @@ class OpenAI extends BaseLLM {
   }
 
   supportsFim(): boolean {
-    return true;
+    return false;
   }
 }
 

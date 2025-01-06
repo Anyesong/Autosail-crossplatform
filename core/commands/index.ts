@@ -28,11 +28,12 @@ export function slashFromCustomCommand(
       }
 
       // Render prompt template
-      const promptUserInput = await renderTemplatedString(
-        customCommand.prompt,
-        ide.readFile.bind(ide),
-        { input: userInput },
-      );
+      // const promptUserInput = await renderTemplatedString(
+      //   customCommand.prompt,
+      //   ide.readFile.bind(ide),
+      //   { input: userInput },
+      // );
+      const promptUserInput = `${userInput} Write a comprehensive set of unit tests for the selected code`;
 
       const messages = [...history];
       // Find the last chat message with this slash command and replace it with the user input

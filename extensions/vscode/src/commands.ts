@@ -888,9 +888,9 @@ const getCommandsMap: (
         {
           label: "$(screen-full) Open full screen chat (Cmd+K Cmd+M)",
         },
-        {
-          label: quickPickStatusText(targetStatus),
-        },
+        // {
+        //   label: quickPickStatusText(targetStatus),
+        // },
         {
           label: "$(gear) Configure autocomplete options",
         },
