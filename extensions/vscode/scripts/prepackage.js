@@ -349,7 +349,7 @@ const exe = os === "win32" ? ".exe" : "";
   console.log("11111111")
   console.log("ghAction() value:", ghAction());
   console.log("isArm() value:", isArm());
-  if (isArm()) {
+  if (ghAction() && isArm()) {
     console.log("22222222")
     // sqlite3
     if (!isWin()) {
