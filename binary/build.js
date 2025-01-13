@@ -223,6 +223,7 @@ async function installNodeModuleInTempDirAndCopyToCurrent(packageName, toCopy) {
   }
 
   console.log("[info] Building binaries with pkg...");
+  console.log(targets)
   for (const target of targets) {
     const targetDir = `bin/${target}`;
     fs.mkdirSync(targetDir, { recursive: true });
@@ -242,7 +243,7 @@ async function installNodeModuleInTempDirAndCopyToCurrent(packageName, toCopy) {
     // Informs of where to look for node_sqlite3.node https://www.npmjs.com/package/bindings#:~:text=The%20searching%20for,file%20is%20found
     fs.writeFileSync(
       `${targetDir}/package.json`,
-      JSON.stringify(
+      JSON.stringify(        
         {
           name: "binary",
           version: "1.0.0",
@@ -256,8 +257,11 @@ async function installNodeModuleInTempDirAndCopyToCurrent(packageName, toCopy) {
 
     // Copy to build directory for testing
     try {
+      console.log("shitshitshit...");
       const [platform, arch] = target.split("-");
+      
       if (platform === currentPlatform && arch === currentArch) {
+        console.log(console.log(`Target Directory: ${targetDir}, Platform: ${platform}, Current Platform: ${currentPlatform}, Arch: ${arch}, Current Arch: ${currentArch}`));
         fs.copyFileSync(
           `${targetDir}/build/Release/node_sqlite3.node`,
           `build/node_sqlite3.node`,

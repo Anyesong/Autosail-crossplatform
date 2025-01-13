@@ -23,9 +23,15 @@ if (!fs.existsSync(guiDist)) {
 // Get the target to package for
 let target = undefined;
 const args = process.argv;
+console.log("start get target...");
 if (args[2] === "--target") {
+
   target = args[3];
+  console.log("get target")
+  console.log(target)
+  console.log("end")
 }
+console.log("----====")
 
 let os;
 let arch;
@@ -340,9 +346,14 @@ const exe = os === "win32" ? ".exe" : "";
   }
 
   // GitHub Actions doesn't support ARM, so we need to download pre-saved binaries
-  if (ghAction() && isArm()) {
+  console.log("11111111")
+  console.log("ghAction() value:", ghAction());
+  console.log("isArm() value:", isArm());
+  if (isArm()) {
+    console.log("22222222")
     // sqlite3
     if (!isWin()) {
+      console.log("3333333")
       // Neither lancedb nor sqlite3 have pre-built windows arm64 binaries
 
       // lancedb binary
@@ -362,6 +373,7 @@ const exe = os === "win32" ? ".exe" : "";
       // Replace the installed with pre-built
       console.log("[info] Downloading pre-built sqlite3 binary");
       rimrafSync("../../core/node_modules/sqlite3/build");
+  
       const downloadUrl = {
         "darwin-arm64":
           "https://github.com/TryGhost/node-sqlite3/releases/download/v5.1.7/sqlite3-v5.1.7-napi-v6-darwin-arm64.tar.gz",
@@ -470,7 +482,7 @@ const exe = os === "win32" ? ".exe" : "";
     "node_modules/jsdom/lib/jsdom/living/xhr/xhr-sync-worker.js",
     "out/xhr-sync-worker.js",
   );
-
+  console.log("star validate")
   // Validate the all of the necessary files are present
   validateFilesPresent([
     // Queries used to create the index for @code context provider
