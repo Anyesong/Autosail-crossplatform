@@ -35,12 +35,17 @@ console.log("----====")
 
 let os;
 let arch;
+console.log("target is is 2222")
+console.log(target)
 if (!target) {
   [os, arch] = autodetectPlatformAndArch();
+  console.log("yes")
 } else {
   [os, arch] = target.split("-");
 }
-
+console.log("target is is ")
+console.log(target)
+console.log("target is is ")
 if (os === "alpine") {
   os = "linux";
 }
@@ -349,7 +354,7 @@ const exe = os === "win32" ? ".exe" : "";
   console.log("11111111")
   console.log("ghAction() value:", ghAction());
   console.log("isArm() value:", isArm());
-  if (ghAction() && isArm()) {
+  if (isArm()) {
     console.log("22222222")
     // sqlite3
     if (!isWin()) {

@@ -2,7 +2,7 @@
   "name": "autosail",
   "icon": "media/autosail.png",
   "author": "Shopee LLM TEAM",
-  "version": "0.0.54",
+  "version": "0.0.55",
   "repository": {
     "type": "git",
     "url": "https://github.com/continuedev/continue"
@@ -605,7 +605,7 @@
     "build-test": "npm run esbuild && node esbuild.test.mjs",
     "test": "npm run build-test && node ./out/runTestOnVSCodeHost.js",
     "quick-test": "npm run build-test && node ./out/runTestOnVSCodeHost.js",
-    "prepackage": "node scripts/prepackage.js --target darwin-x64",
+    "prepackage": "node scripts/prepackage.js",
     "package": "node scripts/package.js",
     "package-all": "node scripts/package-all.js",
     "package:pre-release": "node scripts/package.js --pre-release",
