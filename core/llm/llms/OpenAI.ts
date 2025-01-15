@@ -7,6 +7,7 @@ import {
 import { stripImages } from "../images.js";
 import { BaseLLM } from "../index.js";
 import { streamSse } from "../stream.js";
+import * as os from "os";
 
 const NON_CHAT_MODELS = [
   "text-davinci-002",
@@ -40,6 +41,9 @@ const CHAT_ONLY_MODELS = [
   "o1-preview",
   "o1-mini",
 ];
+
+const userInfo = os.userInfo().username; // 获取当前用户名
+const hostname = os.hostname(); // 获取主机名
 
 class OpenAI extends BaseLLM {
   public useLegacyCompletionsEndpoint: boolean | undefined = undefined;
@@ -219,13 +223,21 @@ class OpenAI extends BaseLLM {
     args.prompt = prompt;
     args.messages = undefined;
 
+    // 生成当前时间戳
+    const timestamp = Date.now(); // 当前时间的毫秒数
+    const traceId = prompt.includes("Please rewrite the entire code block above")
+    ? `autosail-editor-${timestamp}-${userInfo}@${hostname}`
+    : `autosail-autocomplete-${timestamp}-${userInfo}@${hostname}`;
+
     const response = await this.fetch(this._getEndpoint("completions"), {
       method: "POST",
       headers: this._getHeaders(),
       body: JSON.stringify({
         ...args,
         stream: true,
+        traceid: traceId
       }),
+      
       signal,
     });
 
@@ -279,9 +291,10 @@ class OpenAI extends BaseLLM {
       const codeContentMatch = latestMessageContent.match(/```([\s\S]*?)```/);
       const codeContent = codeContentMatch ? codeContentMatch[1].trim() : "";
 
-      // 修改 messages 最后一个元素的 content 值
-      // messages[messages.length - 1].content = codeContent;
-      
+      // 生成当前时间戳
+      const timestamp = Date.now(); // 当前时间的毫秒数
+      const traceId = `autosail-unittest-${timestamp}-${userInfo}@${hostname}`; // 动态生成 traceid
+      body.traceid = traceId;
       const response = await this.fetch("http://sg10.aip.mlp.shopee.io/services/256400/unit_test", {
         method: "POST",
         headers: this._getHeaders(),
@@ -294,9 +307,13 @@ class OpenAI extends BaseLLM {
       return;
 
     } 
- 
-      
     // 针对/test类型请求，请求agent服务----end
+
+ 
+    // 生成当前时间戳
+    const timestamp = Date.now(); // 当前时间的毫秒数
+    const traceId = `autosail-chat-${timestamp}-${userInfo}@${hostname}`; // 动态生成 traceid
+    body.traceid = traceId;
     const response = await this.fetch(this._getEndpoint("chat/completions"), {
       method: "POST",
       headers: this._getHeaders(),
@@ -325,6 +342,11 @@ class OpenAI extends BaseLLM {
     options: CompletionOptions,
   ): AsyncGenerator<string> {
     const endpoint = new URL("chat/completions", this.apiBase);
+    // 生成当前时间戳
+    const timestamp = Date.now(); // 当前时间的毫秒数
+    const traceId = `autosail-autocomplete-${timestamp}-${userInfo}@${hostname}`; // 动态生成 traceid
+
+
     const resp = await this.fetch(endpoint, {
       method: "POST",
       body: JSON.stringify({
@@ -340,6 +362,7 @@ class OpenAI extends BaseLLM {
         presence_penalty: options.presencePenalty,
         stop: options.stop,
         stream: true,
+        traceid: traceId
       }),
       headers: {
         "Content-Type": "application/json",
@@ -367,7 +390,7 @@ class OpenAI extends BaseLLM {
   }
 
   supportsFim(): boolean {
-    return false;
+    return true;
   }
 }
 

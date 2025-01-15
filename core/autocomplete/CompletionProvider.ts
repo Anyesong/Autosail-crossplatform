@@ -40,6 +40,8 @@ export class CompletionProvider {
   private loggingService = new AutocompleteLoggingService();
   private contextRetrievalService: ContextRetrievalService;
 
+  private readonly forbiddenWords: string[] = ["Qwen", "阿里", "阿里云", "通义千问", "Ali", "Alibaba", "QwenLM", "QwenLLM", "通义", "千问"];
+  
   constructor(
     private readonly configHandler: ConfigHandler,
     private readonly ide: IDE,
@@ -229,6 +231,15 @@ export class CompletionProvider {
 
       if (!completion) {
         return undefined;
+      }
+      
+      // 检查 completion 是否包含 forbiddenWords 中的元素（不区分大小写）
+      const lowerCaseCompletion = completion.toLowerCase(); // 转为小写
+      for (const word of this.forbiddenWords) {
+        if (lowerCaseCompletion.includes(word.toLowerCase())) { // 忽略大小写
+          completion = ""; // 如果包含，设置为空字符串
+          break;
+        }
       }
 
       const outcome: AutocompleteOutcome = {
