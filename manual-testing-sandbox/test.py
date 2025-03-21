@@ -1,25 +1,2 @@
-def quick_sort(arr):
-    if len(arr) <= 1:
-        return arr
-    pivot = arr[len(arr) // 2]
-    left = [x for x in arr if x < pivot]
-    middle = [x for x in arr if x == pivot]
-    right = [x for x in arr if x > pivot]
-    return quick_sort(left) + middle + quick_sort(right)
-
-print(quick_sort([3,6,8,10,1,2,1]))
-def quick_sort( arr ) :
-    if len( arr ) <= 1 :
-        return arr
-    pivot = arr[ len( arr ) // 2 ]
-    left = [ x for x in arr if x < pivot ]
-    middle = [ x for x in arr if x == pivot ]
-    right = [ x for x in arr if x > pivot ]
-    return quick_sort( left ) + middle + quick_sort( right )
-
-print( quick_sort( [ 3 , 6 , 8 , 10 , 1 , 2 , 1 ] ) ) 
-
-
-def sum(a, b):
-    return a + b
-
+# create a pandas dataframe df with the following data. The columns are id, name, and age. The data is as follows: 1, 'John Doe', 30; 2, 'Jane Smith', 25; 3, 'Alice Johnson', 35.
+df = 

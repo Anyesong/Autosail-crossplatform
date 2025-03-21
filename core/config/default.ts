@@ -1,5 +1,6 @@
 import {
   ContextProviderWithParams,
+  EmbeddingsProviderDescription,
   ModelDescription,
   SerializedContinueConfig,
   SlashCommandDescription,
@@ -20,6 +21,12 @@ export const DEFAULT_AUTOCOMPLETE_MODEL_CONFIG: ModelDescription = {
   apiKey: "1",
   apiBase: "http://sg9.aip.mlp.shopee.io/aip-svc-153/codecompass-service/v1"
 };
+
+export const defaultEmbedding: EmbeddingsProviderDescription = {
+    "provider": "huggingface-tei",
+    "apiBase": "http://sg9.aip.mlp.shopee.io/services/377156/"
+};
+
 
 export const FREE_TRIAL_MODELS: ModelDescription[] = [
   {
@@ -94,6 +101,8 @@ export const defaultSlashCommandsJetBrains = [
   },
 ];
 
+
+
 export const defaultConfig: SerializedContinueConfig = {
   models: [DEFAULT_CHAT_MODEL_CONFIG],
   tabAutocompleteModel: DEFAULT_AUTOCOMPLETE_MODEL_CONFIG,
@@ -112,6 +121,7 @@ export const defaultConfig: SerializedContinueConfig = {
   ],
   contextProviders: defaultContextProvidersVsCode,
   slashCommands: defaultSlashCommandsVscode,
+  embeddingsProvider: defaultEmbedding
 };
 
 export const defaultConfigJetBrains: SerializedContinueConfig = {

@@ -27,10 +27,10 @@ class HuggingFaceTEIEmbeddingsProvider extends BaseEmbeddingsProvider {
     if (!this.options.apiBase?.endsWith("/")) {
       this.options.apiBase += "/";
     }
-    this.doInfoRequest().then((response) => {
-      this.options.model = response.model_id;
-      this._maxBatchSize = response.max_client_batch_size;
-    });
+    // this.doInfoRequest().then((response) => {
+    //   this.options.model = response.model_id;
+    //   this._maxBatchSize = response.max_client_batch_size;
+    // });
   }
 
   async embed(chunks: string[]) {
@@ -44,10 +44,10 @@ class HuggingFaceTEIEmbeddingsProvider extends BaseEmbeddingsProvider {
 
   async doEmbedRequest(batch: string[]): Promise<number[][]> {
     const resp = await withExponentialBackoff<Response>(() =>
-      this.fetch(new URL("embed", this.options.apiBase), {
+      this.fetch(new URL("encode_corpus", this.options.apiBase), {
         method: "POST",
         body: JSON.stringify({
-          inputs: batch,
+          texts: batch,
         }),
         headers: {
           "Content-Type": "application/json",
