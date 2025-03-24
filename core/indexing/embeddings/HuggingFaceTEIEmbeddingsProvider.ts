@@ -11,7 +11,7 @@ import BaseEmbeddingsProvider from "./BaseEmbeddingsProvider.js";
 
 class HuggingFaceTEIEmbeddingsProvider extends BaseEmbeddingsProvider {
   static providerName: EmbeddingsProviderName = "huggingface-tei";
-  private _maxBatchSize?: number;
+  private _maxBatchSize: number = 512;
   get maxBatchSize(): number | undefined {
     return this._maxBatchSize ?? super.maxBatchSize;
   }
